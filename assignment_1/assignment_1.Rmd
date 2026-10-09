@@ -201,15 +201,15 @@ Add a title, labels for both axes and a legend distinguishing the three
 scenarios.
 
 ```{r task-10}
-plot(generations, q, type = "l", col = "darkblue", lwd = 2, ylim = c(0, 1),
+plot(generations, q, type = "l", col = "#002060", lwd = 2, ylim = c(0, 1),
      main = "Spread of allele r",
      xlab = "Generation", ylab = "Frequency of allele r")
 lines(generations, q_weak, col = "blue", lwd = 2)
-lines(generations, q_lowstart, col = "skyblue", lwd = 2)
+lines(generations, q_lowstart, col = "#00B0F0", lwd = 2)
 legend(
   "topleft",
   legend = c("q", "q_weak", "q_lowstart"),
-  col = c("darkblue", "blue", "skyblue"), lwd = 2, cex = 0.8, bg = "white"
+  col = c("#002060", "blue", "#00B0F0"), lwd = 2, cex = 0.8, bg = "white"
 )
 ```
 
@@ -217,7 +217,7 @@ legend(
 effect of insecticide strength and starting frequency on how quickly
 resistance spreads.
 
-> The simulation suggests that the starting frequency does not matter for the
+> *The simulation suggests that the starting frequency does not matter for the
 spread of the allele. The strength of the insecticide determines the rate at
-wich the resistance spreads.
+wich the resistance spreads.*
 
