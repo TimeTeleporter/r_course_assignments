@@ -1,0 +1,46 @@
+---
+title: "R Course"
+author: "Immanuel Albrecht"
+date: "09.10.2026"
+header-includes:
+  - \newcommand{\thesubtitle}{Assignment 1} # Untertitel
+  - \newcommand{\theversion}{V1.0}                # Version
+  - \newcommand{\theclassification}{}             # Klassifizierung
+  - >
+    \usepackage[ngerman]{babel}
+    \usepackage{titling}
+    \definecolor{Dunkelblau}{RGB}{0,32,96}
+    \definecolor{Hellblau}{RGB}{0,176,240}
+    \usepackage{sectsty}
+    \sectionfont{\color{Dunkelblau}}
+    \subsectionfont{\color{Dunkelblau}}
+    \subsubsectionfont{\color{Dunkelblau}}
+    \usepackage{helvet}
+    \renewcommand*\familydefault{\sfdefault}
+    \usepackage[T1]{fontenc}
+    \usepackage{fancyhdr}
+    \usepackage{tabularx}
+    \usepackage{subfig}
+  # \usepackage[section]{placeins}
+  - >
+    \usepackage{lastpage}
+    \pagestyle{fancy}
+    \fancyhead[L]{CSS Kranken-Versicherung AG\\Aktuariat KVG}
+    \fancyhead[C]{\thetitle\\\thesubtitle}
+    \fancyfoot[L]{\theauthor}
+    \fancyfoot[C]{\theclassification}
+    \fancyfoot[R]{\thepage{}/\pageref{LastPage}}
+    \setlength{\headheight}{40pt}
+    \renewcommand{\maketitle}{
+    \textbf{\color{Dunkelblau} \LARGE \thetitle}\newline
+
+    \textbf{\color{Hellblau} \LARGE \thesubtitle}\newline
+    \rule{\linewidth}{0.4pt}
+    }
+
+output:
+  bookdown::pdf_document2:
+    keep_tex: false
+---
+
+# Introduction
