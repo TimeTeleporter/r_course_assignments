@@ -4,8 +4,8 @@ author: "Immanuel Albrecht"
 date: "09.10.2026"
 header-includes:
   - \newcommand{\thesubtitle}{Assignment 1} # Untertitel
-  - \newcommand{\theversion}{V1.0}                # Version
-  - \newcommand{\theclassification}{}             # Klassifizierung
+  - \newcommand{\theversion}{}              # Version
+  - \newcommand{\theclassification}{}       # Klassifizierung
   - >
     \usepackage[ngerman]{babel}
     \usepackage{titling}
@@ -25,15 +25,18 @@ header-includes:
   - >
     \usepackage{lastpage}
     \pagestyle{fancy}
-    \fancyhead[L]{CSS Kranken-Versicherung AG\\Aktuariat KVG}
-    \fancyhead[C]{\thetitle\\\thesubtitle}
+    \fancyhead[L]{\thetitle}
+    \fancyhead[C]{\thesubtitle}
+    \fancyhead[R]{\thedate}
     \fancyfoot[L]{\theauthor}
     \fancyfoot[C]{\theclassification}
     \fancyfoot[R]{\thepage{}/\pageref{LastPage}}
     \setlength{\headheight}{40pt}
+    \fancypagestyle{firstpage}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}}
     \renewcommand{\maketitle}{
+    \thispagestyle{firstpage}
     \textbf{\color{Dunkelblau} \LARGE \thetitle}\newline
-
+    
     \textbf{\color{Hellblau} \LARGE \thesubtitle}\newline
     \rule{\linewidth}{0.4pt}
     }
@@ -41,6 +44,180 @@ header-includes:
 output:
   bookdown::pdf_document2:
     keep_tex: false
+    toc: false
+    number_sections: false
 ---
 
 # Introduction
+
+In this assignment, you will use basic R programming to simulate how
+insecticide resistance evolves in an insect population.
+
+Consider a single gene with two alleles: $S$ (susceptible to the insecticide,
+dominant) and $r$ (resistant, recessive). Because $r$ is recessive, only
+insects with genotype $rr$ clearly survive spraying, insects with genotype
+$SS$ or $Sr$ still behave as susceptible. We describe this with a survival
+probability between 0 and 1 for each genotype, for example:
+
+```{r reproduction-probabilities}
+w_SS <- 0.35 # the probability of surviving to reproduce of genotype SS
+w_Sr <- 0.35 # the probability of surviving to reproduce of genotype Sr
+w_rr <- 1.0  # the probability of surviving to reproduce of genotype rr
+```
+
+Let $q_n$ denote the relative frequency of the resistance allele $r$ in
+generation $n$, and let $p_n = 1 - q_n$ be the relative frequency of $S$.
+Assuming random mating, the genotypes $SS$, $Sr$ and $rr$ occur in generation
+$n$ with the Hardy-Weinberg proportions $p_n^2$, $2 p_n q_n$ and $q_n^2$.
+After one round of selection by the insecticide, the frequency of the
+resistance allele in generation $n + 1$ is
+
+$$
+  q_{n+1} = \frac{p_n q_n w_{Sr} + q_n^2 w_{rr}}{\bar{w}_n},
+  \qquad
+  \bar{w}_n = p_n^2 w_{SS} + 2 p_n q_n w_{Sr} + q_n^2 w_{rr},
+$$
+
+where $\bar{w}_n$ is the mean survival probability in generation $n$.
+
+# Task
+
+Create a new R script called `Assignment1_solution.R`.
+
+**1.** Create a variable for the number of generations to simulate (25).
+
+```{r task-1}
+number_of_generations <- 25
+```
+
+**2.** Create variables `w_SS`, `w_Sr` and `w_rr` for the three genotype
+survival probabilities given above.
+
+*(As above)*
+
+**3.** Create a vector `generation` containing the numbers 0 to
+`number_of_generations`.
+
+```{r task-3}
+generations <- 0:number_of_generations
+```
+
+**4.** Create a numeric vector `q` of length `number_of_generations + 1`,
+and set `q[1] <- 0.05` as the starting frequency of the resistance allele,
+before spraying began.
+
+```{r task-4}
+q <- rep(0, length.out = number_of_generations + 1)
+q[1] <- 0.05
+q
+```
+
+**5.** Use a `for` loop to fill in the remaining entries of `q` based on the
+formulas above.
+
+```{r task-5}
+for ( n in 1:(length(q)-1) ) {
+  q_n <- q[n]
+  p_n <- 1 - q_n
+  w_bar <- p_n * p_n * w_SS + 2 * p_n * q_n * w_Sr + q_n * q_n * w_rr
+  q[n+1] <- (p_n * q_n * w_Sr + q_n * q_n * w_rr) / w_bar
+}
+q
+```
+
+**6.** Modify the loop to also save the mean survival probability
+$\bar{w}_n$ in a vector `w_bar` of length `number_of_generations`.
+
+```{r task-6}
+w_bar <- rep(0, length.out = number_of_generations)
+for ( n in 1:(length(q)-1) ) {
+  q_n <- q[n]
+  p_n <- 1 - q_n
+  w_bar[n] <- p_n * p_n * w_SS + 2 * p_n * q_n * w_Sr + q_n * q_n * w_rr
+  q[n+1] <- (p_n * q_n * w_Sr + q_n * q_n * w_rr) / w_bar[n]
+}
+q
+w_bar
+```
+
+**7.** To see how the strength of the insecticide affects the speed of
+resistance evolution, repeat the simulation for a weaker insecticide
+(`w_SS <- 0.6` and `w_Sr <- 0.6`). Use a `for` loop, as before, to compute
+this second frequency trajectory and store it in a new vector `q_weak`.
+
+```{r task-7}
+w_SS_weak <- 0.6
+w_Sr_weak <- 0.6
+q_weak <- rep(0, length.out = number_of_generations + 1)
+q_weak[1] <- 0.05
+w_bar_weak <- rep(0, length.out = number_of_generations)
+for ( n in 1:(length(q)-1) ) {
+  q_n <- q_weak[n]
+  p_n <- 1 - q_n
+  w_bar_weak[n] <- p_n * p_n * w_SS_weak + 2 * p_n * q_n * w_Sr_weak + q_n * q_n * w_rr
+  q_weak[n+1] <- (p_n * q_n * w_Sr_weak + q_n * q_n * w_rr) / w_bar_weak[n]
+}
+q_weak
+w_bar_weak
+```
+
+**8.** To see how the starting frequency of the resistance allele interacts
+with the strength of selection, repeat the simulation once more using a
+lower starting frequency `q[1] <- 0.01` combined with a much stronger
+insecticide (`w_SS <- 0.1` and `w_Sr <- 0.1`). Use a `for` loop, as before,
+to compute this trajectory and store it in a new vector `q_lowstart`. Even
+though it starts out behind the other two scenarios, the stronger selection
+should let it overtake both of them at some point during the simulation.
+
+```{r task-8}
+w_SS_lowstart <- 0.1
+w_Sr_lowstart <- 0.1
+q_lowstart <- rep(0, length.out = number_of_generations + 1)
+q_lowstart[1] <- 0.01
+w_bar_lowstart <- rep(0, length.out = number_of_generations)
+for ( n in 1:(length(q)-1) ) {
+  q_n <- q_lowstart[n]
+  p_n <- 1 - q_n
+  w_bar_lowstart[n] <- p_n * p_n * w_SS_lowstart + 2 * p_n * q_n * w_Sr_lowstart + q_n * q_n * w_rr
+  q_lowstart[n+1] <- (p_n * q_n * w_Sr_lowstart + q_n * q_n * w_rr) / w_bar_lowstart[n]
+}
+q_lowstart
+w_bar_lowstart
+```
+
+**9.** Use a `while` loop to find the first generation in which `q_lowstart`
+overtakes `q`, and print that generation.
+
+```{r task-9}
+index <- 1
+while (q_lowstart[index] <= q[index]) {
+  index <- index + 1
+}
+paste("Generation:", index)
+```
+
+**10.** Create a plot of `q`, `q_weak` and `q_lowstart` against `generation`.
+Add a title, labels for both axes and a legend distinguishing the three
+scenarios.
+
+```{r task-10}
+plot(generations, q, type = "l", col = "darkblue", lwd = 2, ylim = c(0, 1),
+     main = "Spread of allele r",
+     xlab = "Generation", ylab = "Frequency of allele r")
+lines(generations, q_weak, col = "blue", lwd = 2)
+lines(generations, q_lowstart, col = "skyblue", lwd = 2)
+legend(
+  "topleft",
+  legend = c("q", "q_weak", "q_lowstart"),
+  col = c("darkblue", "blue", "skyblue"), lwd = 2, cex = 0.8, bg = "white"
+)
+```
+
+**11.** Add a short comment explaining what the simulation suggests about the
+effect of insecticide strength and starting frequency on how quickly
+resistance spreads.
+
+> The simulation suggests that the starting frequency does not matter for the
+spread of the allele. The strength of the insecticide determines the rate at
+wich the resistance spreads.
+
