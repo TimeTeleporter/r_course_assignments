@@ -1,6 +1,6 @@
 ---
 title: "R Course"
-author: "Immanuel Albrecht"
+author: "I. Albrecht"
 date: "09.10.2026"
 header-includes:
   - \newcommand{\thesubtitle}{Assignment 1} # Untertitel
@@ -100,6 +100,7 @@ survival probabilities given above.
 
 ```{r task-3}
 generations <- 0:number_of_generations
+generations
 ```
 
 **4.** Create a numeric vector `q` of length `number_of_generations + 1`,
