@@ -165,8 +165,30 @@ random_dna <- function(length) {
 **1.** Download both files from ILIAS and run `assignment2_demo.R`. Compare
 the actual outputs with the expected outputs.
 
-```{r task-1}
+```{r task-1, eval=FALSE}
+gc_content("GCGCATAT")
+# expected result: 50
 
+reverse_complement("ATGC")
+# expected result: "GCAT"
+
+transcribe("ATGCGT")
+# expected result: "AUGCGU"
+
+translate("AUGGCUUAAGGG")
+# expected result: "MA"
+
+hardy_weinberg(0.6)
+# expected result: a list (or vector) with components 
+# AA (0.36), Aa (0.48), and aa (0.16)
+
+set.seed(10)
+random_sequence <- random_dna(20)
+random_sequence
+# expected result: 20 characters sampled from {"A", "T", "C", "G"}
+
+
+# Add one additional test for each function after fixing the code.
 ```
 
 **2.** Fix the bugs in `assignment2_functions.R`, one function at a time.
