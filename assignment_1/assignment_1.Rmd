@@ -41,6 +41,9 @@ header-includes:
     \rule{\linewidth}{0.4pt}
     }
 
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(inputFile, encoding = encoding,
+                      output_file = "Assignment_1_Immanuel_Albrecht.pdf") })
 output:
   bookdown::pdf_document2:
     keep_tex: false
@@ -201,7 +204,7 @@ paste("Generation:", index)
 Add a title, labels for both axes and a legend distinguishing the three
 scenarios.
 
-```{r task-10}
+```{r task-10, fig.cap="Frequency of the resistance allele r over the generations for the baseline scenario (q), a weaker insecticide (q\\_weak) and a lower starting frequency combined with a stronger insecticide (q\\_lowstart)."}
 plot(generations, q, type = "l", col = "#002060", lwd = 2, ylim = c(0, 1),
      main = "Spread of allele r",
      xlab = "Generation", ylab = "Frequency of allele r")
