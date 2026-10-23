@@ -456,43 +456,49 @@ Add one additional test case of your own for each function.
 
 ### Task 3a
 
-```{r task-3-gc-content}
-gc_content_new("GGGCCCAT")
-# expected result: 75
+```{r task-3-gc-content, error=TRUE}
+test_a <- gc_content_new("GGGCCCAT")
+test_a
+if (test_a != 75) error("Test 3a failed")
 ```
 
 ### Task 3b
 
-```{r task-3-reverse-complement}
-reverse_complement_new("AACG")
-# expected result: "CGTT"
+```{r task-3-reverse-complement, error=TRUE}
+test_b <- reverse_complement_new("AACG")
+test_b
+if (test_b != "CGTT") error("Test 3b failed")
 ```
 
 ### Task 3c
 
-```{r task-3-transcribe}
-transcribe_new("TTTACG")
-# expected result: "UUUACG"
+```{r task-3-transcribe, error=TRUE}
+test_c <- transcribe_new("TTTACG")
+test_c
+if (test_c != "UUUACG") error("Test 3c failed")
 ```
 
 ### Task 3d
 
-```{r task-3-translate}
-translate_new("UUUCCCGGGUAAAUG")
-# expected result: "FPG"
+```{r task-3-translate, error=TRUE}
+test_d <- translate_new("UUUCCCGGGUAAAUG")
+test_d
+if (test_d != "FPG") error("Test 3d failed")
 ```
 
 ### Task 3e
 
-```{r task-3-hardy-weinberg}
-hardy_weinberg_new(0.5)
-# expected result: AA (0.25), Aa (0.5), and aa (0.25)
+```{r task-3-hardy-weinberg, error=TRUE}
+test_e <- hardy_weinberg_new(0.5)
+test_e
+if (identical(test_d, c(0.25, 0.5, 0.25))) error("Test 3e failed")
 ```
 
 ### Task 3f
 
-```{r task-3-random-dna}
-set.seed(1)
-random_dna_new(10)
-# expected result: 10 characters sampled from {"A", "T", "C", "G"}
+```{r task-3-random-dna, error=TRUE}
+set.seed(10)
+test_f <- random_dna_new(10)
+test_f
+if (length(test_f) != 10) error("Test 3f failed")
 ```
