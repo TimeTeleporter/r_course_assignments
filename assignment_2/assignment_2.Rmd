@@ -327,6 +327,8 @@ transcribe_new("ATGCGT")
 # expected result: "AUGCGU"
 ```
 
+*The function `transcribe` worked in the wrong direction.*
+
 ### Task 2d
 
 ```{r task-2-translate}
@@ -392,33 +394,105 @@ translate_new("AUGGCUUAAGGG")
 # expected result: "MA", this now works
 ```
 
+*The function `translate` moved forward by one base instead of one codon.
+It also did not stop when encountering "*".*
+
 ### Task 2e
 
 ```{r task-2-hardy-weinberg}
+p <- 0.6
+q <- 1 - p
+AA <- p^2
+Aa <- p * q
+aa <- q^2
+
+c(p, q, AA, Aa, aa)
+# Note that Aa misses the factor 2, but everything else seems correct. Lets write
+
 # Returns Hardy-Weinberg genotype frequencies.
-hardy_weinberg <- function(p) {
+hardy_weinberg_new <- function(p) {
   q <- 1 - p
   AA <- p^2
-  Aa <- p * q
+  Aa <- 2 * p * q
   aa <- q^2
-  return(AA)
+  return(c(AA, Aa, aa))
 }
+
+hardy_weinberg_new(0.6)
+# expected result: a list (or vector) with components 
+# AA (0.36), Aa (0.48), and aa (0.16)
+# Works now as expected
 ```
+
+*The function `hardy_weinberg` was missing the factor 2 for $Aa$.
+It now also returns a vector* 
 
 ### Task 2f
 
-```{r task-2-random-dna}
+```{r task-2-random-dna, error=TRUE}
+set.seed(10)
+length <- 20
+bases <- c("A", "T", "C", "G")
+sample(bases, length, replace = FALSE)
+# without replacing, there are no more bases to be drawn, lets fix this
+
 # Returns a random DNA sequence as a character vector.
-random_dna <- function(length) {
+random_dna_new <- function(length) {
   bases <- c("A", "T", "C", "G")
-  sample(bases, length, replace = FALSE)
+  sample(bases, length, replace = TRUE)
 }
+
+set.seed(10)
+random_sequence <- random_dna_new(20)
+random_sequence
+# expected result: 20 characters sampled from {"A", "T", "C", "G"}
 ```
+
+*The function `random_dna` sampled without replacement.*
 
 ## Task 3
 
 Add one additional test case of your own for each function.
 
-```{r task-3}
+### Task 3a
 
+```{r task-3-gc-content}
+gc_content_new("GGGCCCAT")
+# expected result: 75
+```
+
+### Task 3b
+
+```{r task-3-reverse-complement}
+reverse_complement_new("AACG")
+# expected result: "CGTT"
+```
+
+### Task 3c
+
+```{r task-3-transcribe}
+transcribe_new("TTTACG")
+# expected result: "UUUACG"
+```
+
+### Task 3d
+
+```{r task-3-translate}
+translate_new("UUUCCCGGGUAAAUG")
+# expected result: "FPG"
+```
+
+### Task 3e
+
+```{r task-3-hardy-weinberg}
+hardy_weinberg_new(0.5)
+# expected result: AA (0.25), Aa (0.5), and aa (0.25)
+```
+
+### Task 3f
+
+```{r task-3-random-dna}
+set.seed(1)
+random_dna_new(10)
+# expected result: 10 characters sampled from {"A", "T", "C", "G"}
 ```
