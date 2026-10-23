@@ -162,38 +162,40 @@ random_dna <- function(length) {
 
 # Your Task
 
-**1.** Download both files from ILIAS and run `assignment2_demo.R`. Compare
+## Task 1
+
+Download both files from ILIAS and run `assignment2_demo.R`. Compare
 the actual outputs with the expected outputs.
 
-**1a)**
+### Task 1a
 
 ```{r task-1-gc-content}
 gc_content("GCGCATAT")
 # expected result: 50
 ```
 
-**1b)**
+### Task 1b
 
 ```{r task-1-reverse-complement}
 reverse_complement("ATGC")
 # expected result: "GCAT"
 ```
 
-**1c)**
+### Task 1c
 
 ```{r task-1-transcribe}
 transcribe("ATGCGT")
 # expected result: "AUGCGU"
 ```
 
-**1d)**
+### Task 1d
 
 ```{r task-1-translate}
 translate("AUGGCUUAAGGG")
 # expected result: "MA"
 ```
 
-**1e)**
+### Task 1e
 
 ```{r task-1-hardy-weinberg}
 hardy_weinberg(0.6)
@@ -201,7 +203,7 @@ hardy_weinberg(0.6)
 # AA (0.36), Aa (0.48), and aa (0.16)
 ```
 
-**1f)**
+### Task 1f
 
 ```{r task-1-random-dna, error=TRUE}
 set.seed(10)
@@ -213,15 +215,209 @@ random_sequence
 # Add one additional test for each function after fixing the code.
 ```
 
-**2.** Fix the bugs in `assignment2_functions.R`, one function at a time.
+## Task 2
+
+Fix the bugs in `assignment2_functions.R`, one function at a time.
 Add comments above each corrected section explaining the bug. Keep the
 overall structure and test after every change.
 
-```{r task-2}
+### Task 2a
 
+```{r task-2-gc-content}
+seq <- "GCGCATAT"
+bases <- strsplit(seq, "")[[1]]
+# this works fine
+
+bases == "G" & bases == "C"
+# this does not work, as one letter cannot be "G" AND "C", replace it with OR
+
+gc_count <- sum(bases == "G" | bases == "C")
+# the sum works
+
+gc_count / length(bases)
+# this does yield 0.5 but we want 50, so we multiply by 100
+
+gc_content_new <- function(seq) {
+  bases <- strsplit(seq, "")[[1]]
+  gc_count <- sum(bases == "G" | bases == "C")
+  return(gc_count / length(bases) * 100)
+}
+
+gc_content_new(seq)
+# expected result: 50, the function works now correctly
 ```
 
-**3.** Add one additional test case of your own for each function.
+*For the function `gc_content` the problem was taking the logical and operation
+(`&`) instead of the logical or operation (`|`).*
+
+### Task 2b
+
+```{r task-2-reverse-complement}
+seq <- "ATGC"
+bases <- strsplit(seq, "")[[1]]
+# this works
+
+bases[bases == "A"] <- "T"
+bases
+# we replaced all "A" with "T"
+bases[bases == "T"] <- "A"
+bases
+# then we replaced all "T" with "A", but we also replaced the ones we already flipped
+# instead we create a new vector "bases_complement" for the result of each flip
+
+bases <- strsplit(seq, "")[[1]]
+bases_complement <- bases
+
+bases_complement[bases == "A"] <- "T"
+bases_complement[bases == "T"] <- "A"
+bases_complement[bases == "C"] <- "G"
+bases_complement[bases == "G"] <- "C"
+bases_complement
+# this now seems to work correctly, it still needs to be reversed.
+
+reversed_bases <- rev(bases)
+paste(reversed_bases, collapse = "")
+# these work as intended
+
+reverse_complement_new <- function(seq) {
+  bases <- strsplit(seq, "")[[1]]
+  
+  bases_complement <- bases
+  
+  bases_complement[bases == "A"] <- "T"
+  bases_complement[bases == "T"] <- "A"
+  bases_complement[bases == "C"] <- "G"
+  bases_complement[bases == "G"] <- "C"
+  
+  reversed_bases <- rev(bases_complement)
+  paste(reversed_bases, collapse = "")
+}
+
+reverse_complement_new("ATGC")
+# expected result: "GCAT", this now works correctly
+```
+
+*The function `reverse_complement` doubly flipped the letters, as they
+were written into the original vector.*
+
+### Task 2c
+
+```{r task-2-transcribe}
+dna_seq <- "ATGCGT"
+bases <- strsplit(dna_seq, "")[[1]]
+bases
+# this works correctly
+
+bases[bases == "U"] <- "T"
+bases
+# this does not work, as there are no "U" in dna
+# the replacement should work in the oppisite direction
+
+bases[bases == "T"] <- "U"
+bases
+# this now works
+
+transcribe_new <- function(dna_seq) {
+  bases <- strsplit(dna_seq, "")[[1]]
+  bases[bases == "T"] <- "U"
+  paste(bases, collapse = "")
+}
+
+transcribe_new("ATGCGT")
+# expected result: "AUGCGU"
+```
+
+### Task 2d
+
+```{r task-2-translate}
+rna_seq <- "AUGGCUUAAGGG"
+codon_translations <- c(AUG = "M", GCU = "A", UAA = "*", GGG = "G",
+                   UUU = "F", CCC = "P")
+codon_translations
+# this gives the table
+
+protein <- ""
+1:(nchar(rna_seq))
+# this gives an index i for each letter, lets consider 1
+
+i <- 1
+codon <- substr(rna_seq, i, i + 2)
+codon
+# we get the first codon correctly
+
+amino_acid <- codon_translations[codon]
+amino_acid
+# it translates correctly
+
+protein <- paste0(protein, amino_acid)
+protein
+# it is appended correctly, lets consider the next index
+
+i <- 2
+codon <- substr(rna_seq, i, i + 2)
+amino_acid <- codon_translations[codon]
+amino_acid
+# we seem to get an unknow pattern, as such, the inexing is wrong, lets fix it
+
+# Translates an RNA sequence until a stop codon.
+translate_new <- function(rna_seq) {
+  codon_translations <- c(AUG = "M", GCU = "A", UAA = "*", GGG = "G",
+                   UUU = "F", CCC = "P")
+  protein <- ""
+  for (i in 1:(nchar(rna_seq) / 3)) {
+    codon <- substr(rna_seq, (i - 1) * 3 + 1, i * 3)
+    amino_acid <- codon_translations[codon]
+    protein <- paste0(protein, amino_acid)
+  }
+  return(protein)
+}
+
+translate_new("AUGGCUUAAGGG")
+# expected result: "MA", not quite there yet, we still need to cut off at "*"
+
+translate_new <- function(rna_seq) {
+  codon_translations <- c(AUG = "M", GCU = "A", UAA = "*", GGG = "G",
+                   UUU = "F", CCC = "P")
+  protein <- ""
+  for (i in 1:(nchar(rna_seq) / 3)) {
+    codon <- substr(rna_seq, (i - 1) * 3 + 1, i * 3)
+    amino_acid <- codon_translations[codon]
+    if (amino_acid == "*") break
+    protein <- paste0(protein, amino_acid)
+  }
+  return(protein)
+}
+
+translate_new("AUGGCUUAAGGG")
+# expected result: "MA", this now works
+```
+
+### Task 2e
+
+```{r task-2-hardy-weinberg}
+# Returns Hardy-Weinberg genotype frequencies.
+hardy_weinberg <- function(p) {
+  q <- 1 - p
+  AA <- p^2
+  Aa <- p * q
+  aa <- q^2
+  return(AA)
+}
+```
+
+### Task 2f
+
+```{r task-2-random-dna}
+# Returns a random DNA sequence as a character vector.
+random_dna <- function(length) {
+  bases <- c("A", "T", "C", "G")
+  sample(bases, length, replace = FALSE)
+}
+```
+
+## Task 3
+
+Add one additional test case of your own for each function.
 
 ```{r task-3}
 
